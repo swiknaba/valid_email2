@@ -34,6 +34,10 @@ class TestUserMessage < TestModel
   validates :email, 'valid_email_2/email': { message: "custom message" }
 end
 
+class TestUserMessageAsSymbol < TestModel
+  validates :email, 'valid_email_2/email': { message: :custom_message }
+end
+
 describe ValidEmail2 do
 
   let(:disposable_domain) { ValidEmail2.disposable_emails.first }
@@ -220,10 +224,20 @@ describe ValidEmail2 do
   end
 
   describe "with custom error message" do
-    it "supports settings a custom error message" do
-      user = TestUserMessage.new(email: "fakeemail")
-      user.valid?
-      expect(user.errors.full_messages).to include("Email custom message")
+    context "when message is passed as string" do
+      it "supports settings a custom error message" do
+        user = TestUserMessage.new(email: "fakeemail")
+        user.valid?
+        expect(user.errors.full_messages).to include("Email custom message")
+      end
+    end
+
+    context "when message is passed as symbol" do
+      it "supports settings a custom error message" do
+        user = TestUserMessageAsSymbol.new(email: "fakeemail")
+        user.valid?
+        expect(user.errors.full_messages).to include("custom_message")
+      end
     end
   end
 
